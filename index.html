@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alysson | Bio</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html {
+            height: 100%;
+            /* ====================================================
+               FUNDO: coloque o caminho da sua imagem aqui abaixo.
+               Exemplos:
+                 - Arquivo local:  background-image: url('fundo.jpg');
+                 - Link da web:    background-image: url('https://seusite.com/imagem.jpg');
+               ==================================================== */
+            background-color: #0a0a0a;
+            background-image: url('fundo.jpg'); /* <-- TROQUE AQUI */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Courier New', Courier, monospace;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* Camada escura sobre o fundo */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: brightness(0.8) contrast(1.1);
+            z-index: 0;
+        }
+
+        /* Camada de blur do fundo — some ao entrar */
+        #blur-layer {
+            position: fixed;
+            inset: 0;
+            backdrop-filter: blur(18px) brightness(0.6);
+            -webkit-backdrop-filter: blur(18px) brightness(0.6);
+            z-index: 99;
+            transition: opacity 2s ease, backdrop-filter 2s ease;
+            pointer-events: none;
+        }
+        #blur-layer.fade-out {
+            opacity: 0;
+        }
+
+        /* ── OVERLAY DE ENTRADA ── */
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: transparent;
+            z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: opacity 2s ease, visibility 2s ease;
+        }
+        #overlay.fade-out { opacity: 0; visibility: hidden; }
+
+        /* Botão de entrada também com vidro */
+        .btn-abrir {
+            letter-spacing: 8px;
+            font-size: 13px;
+            color: #fff;
+            padding: 16px 50px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            background: linear-gradient(
+                135deg,
+                rgba(255,255,255,0.18) 0%,
+                rgba(255,255,255,0.06) 50%,
+                rgba(255,255,255,0.14) 100%
+            );
+            backdrop-filter: blur(12px) saturate(1.4);
+            -webkit-backdrop-filter: blur(12px) saturate(1.4);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.5),
+                inset 0 -1px 0 rgba(0,0,0,0.2),
+                0 8px 32px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Reflexo interno (topo) */
+        .btn-abrir::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 5%; width: 90%; height: 45%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0.35),
+                rgba(255,255,255,0.0)
+            );
+            border-radius: 50px 50px 0 0;
+            pointer-events: none;
+        }
+        .btn-abrir:hover {
+            background: linear-gradient(
+                135deg,
+                rgba(255,255,255,0.30) 0%,
+                rgba(255,255,255,0.12) 50%,
+                rgba(255,255,255,0.26) 100%
+            );
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.7),
+                inset 0 -1px 0 rgba(0,0,0,0.2),
+                0 8px 40px rgba(255,255,255,0.2),
+                0 0 60px rgba(255,255,255,0.08);
+            transform: scale(1.04);
+        }
+
+        /* ── CONTEÚDO ── */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .profile-img {
+            width: 130px; height: 130px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.25);
+            margin-bottom: 25px;
+            object-fit: cover;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+        }
+
+        .name {
+            font-size: 22px;
+            letter-spacing: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .bio {
+            font-size: 12px;
+            max-width: 450px;
+            opacity: 0.8;
+            line-height: 1.8;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* ── BOTÕES GLASS (estilo Windows 7) ── */
+        .social-icons {
+            margin-top: 45px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .social-icons a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 13px 34px;
+
+            /* Forma arredondada */
+            border-radius: 50px;
+
+            /* Vidro */
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            background: linear-gradient(
+                135deg,
+                rgba(255,255,255,0.18) 0%,
+                rgba(255,255,255,0.06) 50%,
+                rgba(255,255,255,0.14) 100%
+            );
+            backdrop-filter: blur(12px) saturate(1.4);
+            -webkit-backdrop-filter: blur(12px) saturate(1.4);
+
+            /* Sombras internas e externas */
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.5),   /* brilho topo */
+                inset 0 -1px 0 rgba(0,0,0,0.2),         /* sombra base */
+                0 6px 24px rgba(0,0,0,0.35);
+
+            position: relative;
+            overflow: hidden;
+            transition: all 0.35s ease;
+        }
+
+        /* Reflexo brilhante interno (topo do botão) */
+        .social-icons a::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 5%; width: 90%; height: 46%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0.38),
+                rgba(255,255,255,0.0)
+            );
+            border-radius: 50px 50px 0 0;
+            pointer-events: none;
+        }
+
+        /* Brilho sutil na parte inferior */
+        .social-icons a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 15%; width: 70%; height: 30%;
+            background: linear-gradient(
+                to top,
+                rgba(255,255,255,0.12),
+                rgba(255,255,255,0.0)
+            );
+            border-radius: 0 0 50px 50px;
+            pointer-events: none;
+        }
+
+        .social-icons a:hover {
+            background: linear-gradient(
+                135deg,
+                rgba(255,255,255,0.30) 0%,
+                rgba(255,255,255,0.12) 50%,
+                rgba(255,255,255,0.26) 100%
+            );
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.7),
+                inset 0 -1px 0 rgba(0,0,0,0.2),
+                0 8px 32px rgba(255,255,255,0.18),
+                0 0 50px rgba(255,255,255,0.07);
+            transform: translateY(-2px) scale(1.04);
+        }
+
+        .social-icons a:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow:
+                inset 0 2px 6px rgba(0,0,0,0.3),
+                inset 0 -1px 0 rgba(255,255,255,0.2),
+                0 2px 8px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="blur-layer"></div>
+
+    <div id="overlay" onclick="iniciar()">
+        <div class="btn-abrir">ABRIR</div>
+    </div>
+
+    <div class="main-content">
+        <img src="perfil.jpg" class="profile-img" alt="Foto de perfil">
+
+        <h1 class="name">ALYSSON</h1>
+        <p class="bio">
+            I AM NOT EVEN CLOSE TO THE MAN I WANT TO BE.<br>
+            BUT I AM VERY FAR FROM THE PERSON I ONCE WAS.
+        </p>
+
+        <div class="social-icons">
+            <a href="https://www.instagram.com/alyssonlem0s" target="_blank">Instagram</a>
+            <a href="https://www.tiktok.com/@alyssonmca" target="_blank">TikTok</a>
+        </div>
+    </div>
+
+    <audio id="musica" loop>
+        <source src="musica.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        function iniciar() {
+            document.getElementById('overlay').classList.add('fade-out');
+            document.getElementById('blur-layer').classList.add('fade-out');
+            document.getElementById('musica').play();
+        }
+    </script>
+
+</body>
+</html>
